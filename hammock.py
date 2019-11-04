@@ -17,7 +17,8 @@ class Hammock(object):
             strip_slashes -- flag if you want to strip leading and trailing slashes from arguments
             **kwargs -- `requests` session be initiated with if any available
         """
-        self._name = name
+
+        self._name = name.strip('/') if strip_slash else name
         self._parent = parent
         self._append_slash = append_slash
         self._strip_slash = strip_slash
@@ -35,9 +36,7 @@ class Hammock(object):
             name -- name of child
         """
         child = copy.copy(self)
-        child._name = name
-        if self._strip_slash:
-            child._name = child._name.strip('/')
+        child._name = name.strip('/') if self._strip_slash else name
         child._parent = self
         return child
 
