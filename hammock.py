@@ -64,7 +64,8 @@ class Hammock(object):
         """This method converts args into chained Hammock instances
         Arguments:
             :param args:  array of string representable objects
-            :return: the Hammock chain"""
+            :return: the Hammock chain
+        """
         chain = self
         for arg in args:
             chain = chain._spawn(arg)
@@ -105,7 +106,8 @@ class Hammock(object):
 
 def bind_method(method):
     """Bind `requests` module HTTP verbs to `Hammock` class as
-    static methods."""
+    static methods.
+    """
 
     def aux(hammock, *args, **kwargs):
         return hammock._request(method, *args, **kwargs)
