@@ -11,5 +11,5 @@ setup(
     install_requires=[
         'requests>=1.1.0'
     ],
-    tests_require=['httpretty==0.5.4'],
+    tests_require=['httpretty>=0.5.4'],
 )

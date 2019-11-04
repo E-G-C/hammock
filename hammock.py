@@ -11,11 +11,12 @@ class Hammock(object):
     def __init__(self, name=None, parent=None, append_slash=False, strip_slash=True, session=None, **kwargs):
         """Constructor
         Arguments:
-            name -- name of node
-            parent -- parent node for chaining
-            append_slash -- flag if you want a trailing slash in urls
-            strip_slashes -- flag if you want to strip leading and trailing slashes from arguments
-            **kwargs -- `requests` session be initiated with if any available
+            :param name: name of node
+            :param parent: parent node for chaining
+            :param append_slash: flag if you want a trailing slash in urls
+            :param strip_slash:  flag if you want to strip leading and trailing slashes from arguments
+            :param session: custom session to use
+            :param kwargs: requests` session be initiated with if any available
         """
 
         self._name = name.strip('/') if strip_slash else name
@@ -24,7 +25,7 @@ class Hammock(object):
         self._strip_slash = strip_slash
         self._session = session or requests.Session()
         for k, v in kwargs.items():
-            orig = getattr(self._session, k)  # Let it throw exception
+            orig = getattr(self._session, k)
             if isinstance(orig, dict):
                 orig.update(v)
             else:
@@ -33,7 +34,8 @@ class Hammock(object):
     def _spawn(self, name):
         """Returns a shallow copy of current `Hammock` instance as nested child
         Arguments:
-            name -- name of child
+            :param name:  name of the child
+            :return: Hammock instance
         """
         child = copy.copy(self)
         child._name = name.strip('/') if self._strip_slash else name
@@ -44,13 +46,14 @@ class Hammock(object):
         """Here comes some magic. Any absent attribute typed within class
         falls here and return a new child `Hammock` instance in the chain.
         """
+
         # Ignore specials (Otherwise shallow copying causes infinite loops)
         if name.startswith('__'):
             raise AttributeError(name)
         return self._spawn(name)
 
     def __iter__(self):
-        """Iterator implementation which iterates over `Hammock` chain."""
+        """Iterator implementation which iterates over the `Hammock` chain."""
         current = self
         while current:
             if current._name:
@@ -60,13 +63,14 @@ class Hammock(object):
     def _chain(self, *args):
         """This method converts args into chained Hammock instances
         Arguments:
-            *args -- array of string representable objects
-        """
+            :param args:  array of string representable objects
+            :return: the Hammock chain"""
         chain = self
         for arg in args:
             chain = chain._spawn(arg)
         return chain
 
+    # TODO: unused method
     def _close_session(self):
         """Closes session if exists"""
         if self._session:
@@ -81,7 +85,8 @@ class Hammock(object):
     def _url(self, *args):
         """Converts current `Hammock` chain into a url string
         Arguments:
-            *args -- extra url path components to tail
+            :param args: extra url path components to tail
+            :return:
         """
         path_comps = [mock._name for mock in self._chain(*args)]
         url = u"/".join(reversed(path_comps))
@@ -90,13 +95,11 @@ class Hammock(object):
         return url
 
     def __repr__(self):
-        """ String representaion of current `Hammock` chain"""
+        """ String representation of current `Hammock` chain"""
         return self._url()
 
     def _request(self, method, *args, **kwargs):
-        """
-        Makes the HTTP request using requests module
-        """
+        """ Makes the HTTP request using requests module"""
         return self._session.request(method, self._url(*args), **kwargs)
 
 
