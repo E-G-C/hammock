@@ -7,7 +7,6 @@ from hammock import Hammock
 
 
 class TestCaseWrest(unittest.TestCase):
-
     HOST = 'localhost'
     PORT = 8000
     BASE_URL = 'http://%s:%s' % (HOST, PORT)
@@ -28,13 +27,13 @@ class TestCaseWrest(unittest.TestCase):
         HTTPretty.register_uri(HTTPretty.GET, self.URL)
         client = Hammock(self.BASE_URL)
         combs = [
-            client.sample.path.to.resource,
-            client('sample').path('to').resource,
-            client('sample', 'path', 'to', 'resource'),
-            client('sample')('path')('to')('resource'),
-            client.sample('path')('to', 'resource'),
-            client('sample', 'path',).to.resource
-        ]
+                client.sample.path.to.resource,
+                client('sample').path('to').resource,
+                client('sample', 'path', 'to', 'resource'),
+                client('sample')('path')('to')('resource'),
+                client.sample('path')('to', 'resource'),
+                client('sample', 'path', ).to.resource
+                ]
 
         for comb in combs:
             self.assertEqual(str(comb), self.URL)
@@ -51,6 +50,7 @@ class TestCaseWrest(unittest.TestCase):
     @httprettified
     def test_inheritance(self):
         """https://github.com/kadirpekel/hammock/pull/5/files#L1R99"""
+
         class CustomHammock(Hammock):
             def __init__(self, name=None, parent=None, **kwargs):
                 if 'testing' in kwargs:
@@ -75,9 +75,9 @@ class TestCaseWrest(unittest.TestCase):
     def test_session(self):
         ACCEPT_HEADER = 'application/json'
         kwargs = {
-            'headers': {'Accept': ACCEPT_HEADER},
-            'auth': ('foo', 'bar'),
-        }
+                'headers': {'Accept': ACCEPT_HEADER},
+                'auth':    ('foo', 'bar'),
+                }
         client = Hammock(self.BASE_URL, **kwargs)
         HTTPretty.register_uri(HTTPretty.GET, self.URL)
         client.sample.path.to.resource.GET()
@@ -92,6 +92,7 @@ class TestCaseWrest(unittest.TestCase):
         self.assertIn('Authorization', request.headers)
         self.assertIn('Accept', request.headers)
         self.assertEqual(request.headers.get('Accept'), ACCEPT_HEADER)
+
 
 if __name__ == '__main__':
     unittest.main()
